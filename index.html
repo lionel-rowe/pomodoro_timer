@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pomodoro Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Baloo|Montserrat" rel="stylesheet">
+</head>
+
+<body>
+  
+  <div id="container">
+  
+    <h1>Pomodoro Clock</h1>
+
+    <div id="timer">
+      <img id="timerImg" src="img/tomato_red.png">
+      <div id="timerDisplay"></div>
+      <div id="status">&nbsp;</div>
+      <svg id="cutout"></svg>
+    </div>
+
+    <form id="controls">
+      <p class="labelInput">
+        <label for="workTimer">Pomodoro length: </label>
+        <input type="text" id="workTimer" maxlength="2">
+      </p>
+      <p class="labelInput">
+        <label for="breakTimer">Break length: </label>
+        <input type="text" id="breakTimer" maxlength="2">
+      </p>
+      <button id="startStop">Start</button>
+    </form>
+  
+  </div>
+  
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+
+    <script src="js/index.js"></script>
+
+</body>
+</html>
