@@ -144,7 +144,7 @@ $(document).ready(function() {
     var clockHandY;
 
     var secondsToCount = working ? workTimer : breakTimer;
-    var currentSecond = secondsToCount - currentTimer - 0.000001; // ok so this is really hacky, but it's the simplest way to prevent Flash Of Unformatted Tomato
+    var currentSecond = secondsToCount - currentTimer;
 
     var startpoint = 90;  
 
@@ -157,19 +157,24 @@ $(document).ready(function() {
 
     over180Deg = currentDegrees > 180 ? 1 : 0;
 
-    $('#cutout').html(`
-      <path d="M ${radius} ${radius}
-      L ${radius} 0
-      A ${radius} ${radius},
-      0,
-      ${over180Deg},
-      1,
-      ${clockHandX} ${clockHandY}
-      Z"
-      fill="#5e4"
-      />
-    `); // fill is $main-background-color from SCSS
-    
+    if (currentSecond === secondsToCount) {
+      $('#cutout').html(`
+        <circle cx="${radius}" cy="${radius}" r="${radius}" fill="#5e4" />
+      `)
+    } else {
+      $('#cutout').html(`
+        <path d="M ${radius} ${radius}
+        L ${radius} 0
+        A ${radius} ${radius},
+        0,
+        ${over180Deg},
+        1,
+        ${clockHandX} ${clockHandY}
+        Z"
+        fill="#5e4"
+        />
+      `); // fill is $main-background-color from SCSS
+    }
   }
   
 });
