@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  
+      
   const hour = 60; // mins
   const minute = 60; // secs
   const second = 1000; // ms
@@ -7,7 +7,7 @@ $(document).ready(function() {
   // set up state
   
   var workTimer = 25 * minute; // minutes
-  var breakTimer = 5 * minute; // minutes
+  var breakTimer = 10 * minute; // minutes
   var displayMessageTimer = 5; // seconds
   
   var working = true;
@@ -56,36 +56,44 @@ $(document).ready(function() {
       currentTimer--;
       writeTime();
     }
-    sliceTomato();
+    if (working) {
+      sliceTomato();
+    } else {
+      ripenTomato();
+    }
   }
+  
+  var blinkInterval;
   
   function writeStatus() {
     $('#status').css('opacity', '0');
     if (paused) {
-      $('#status').html('Paused...')
+      $('#status').html('Paused...');
     } else if (working) {
       $('#status').html('Time to work!');
     } else {
-      $('#status').html('Break time!');
+      $('#status').html('Ripening... Take a break!');
     }
+    
     $('#status').animate({opacity: 1}, 1000);
+  
   }
   
   var cdInterval;
   
-  $('#startStop').click(function(e) {
+  $('#timer').click(function(e) {
     e.preventDefault();
     if (paused) {
       cdInterval = setInterval(countdown, second);
       
       paused = false;
       
-      $(this).html('Stop');
+      //$(this).html('Stop');
       
     } else {
       clearInterval(cdInterval);
       paused = true;
-      $(this).html('Start');
+      //$(this).html('Start');
       
     }
     writeStatus();
@@ -175,6 +183,17 @@ $(document).ready(function() {
         />
       `); // fill is $main-background-color from SCSS
     }
+  }
+  
+  function ripenTomato() {
+    
+    var secondsToCount = working ? workTimer : breakTimer;
+    var currentSecond = secondsToCount - currentTimer;
+
+    $('#cutout').html('');
+    
+    $('#breakTimerImg').css('opacity', 1 - currentSecond/secondsToCount);
+    
   }
   
 });
