@@ -1,14 +1,12 @@
 $(document).ready(function() {
       
-  const hour = 60; // mins
   const minute = 60; // secs
   const second = 1000; // ms
   
   // set up state
   
   var workTimer = 25 * minute; // minutes
-  var breakTimer = 10 * minute; // minutes
-  var displayMessageTimer = 5; // seconds
+  var breakTimer = 5 * minute; // minutes
   
   var working = true;
   var paused = true;
@@ -75,7 +73,7 @@ $(document).ready(function() {
       $('#status').html('Ripening... Take a break!');
     }
     
-    $('#status').animate({opacity: 1}, 1000);
+    $('#status').animate({opacity: 1}, second);
   
   }
   

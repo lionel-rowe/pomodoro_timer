@@ -30,6 +30,7 @@ h1 {
   z-index: -1;
   position: absolute;
   top: 0;
+  left: 0;
   opacity: 0; }
 
 #cutout {
@@ -73,6 +74,8 @@ h1 {
   #controls input[type=number]::-webkit-inner-spin-button, #controls input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0; }
+  #controls input[type=number] {
+    -moz-appearance: textfield; }
   #controls input[type=number]::-ms-clear {
     display: none; }
   #controls .labelInput::after {
