@@ -15,7 +15,9 @@
   
   <h1>Pomodoro Timer</h1>
 
-  <div id="timer">
+  <input type="image" src="img/sound_on.svg" id="mute" aria-label="Sound on/off">
+  
+  <div id="timer" tabindex="0" aria-label="Start/stop timer">
     <img class="timerImg" id="pomodoroTimerImg" src="img/tomato_red.png" alt="Pomodoro timer">
     <img class="timerImg" id="breakTimerImg" src="img/tomato_green.png" alt="Break timer"> <!--Has to be loaded on page load to prevent Flash Of Unformatted Tomato-->
     <div id="timerDisplay"></div>

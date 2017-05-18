@@ -1,5 +1,9 @@
 $(document).ready(function() {
-      
+  
+  // TODO
+  // * Fix timing of pauses (sometimes skips a second)
+  // * Make timers skip 0
+  
   const minute = 60; // secs
   const second = 1000; // ms
   
@@ -8,8 +12,29 @@ $(document).ready(function() {
   var workTimer = 25 * minute; // minutes
   var breakTimer = 5 * minute; // minutes
   
+  // media
+    
+  var steel_drums = new Audio('sounds/steel_drums.mp3');
+  var arpeggio = new Audio('sounds/arpeggio.mp3');
+  /* credit:
+  - https://www.freesound.org/people/kaponja/sounds/54217/
+  and
+  - https://www.freesound.org/people/ajubamusic/sounds/320806/
+  */
+  
+  /* uncomment to turn on test mode
+  
+  var testMode = true;
+  
+  if (testMode) {
+    workTimer = 0.1 * minute;
+    breakTimer = 0.1 * minute;
+  }
+  */
+  
   var working = true;
   var paused = true;
+  var audioPlayback = true;
   var currentTimer = working ? workTimer : breakTimer;
   
   // initialize UI
@@ -33,31 +58,51 @@ $(document).ready(function() {
   writeTime();
   
   function switchover() {
+    totalPause = 0;
     if (working) {
       currentTimer = breakTimer;
       working = false;
-      $('#timerImg').attr('src', 'img/tomato_green.png');
-      
+      if (audioPlayback) {
+        steel_drums.play();
+      }
     } else {
       currentTimer = workTimer;
       working = true;
-      $('#timerImg').attr('src', 'img/tomato_red.png');
+      if (audioPlayback) {
+        arpeggio.play();
+      }
     }
     writeStatus();
     writeTime();
   }
+
+  var timeStarted, timeNow, timeElapsed, startOfPause, endOfPause, totalPause = 0;
+  
+  var secondsToCount, currentSecond, oneIdxedCurrentSecond;
   
   function countdown() {
-    if (currentTimer === 0) {
+    
+    secondsToCount = working ? workTimer : breakTimer;
+    currentSecond = secondsToCount - currentTimer;
+    oneIdxedCurrentSecond = currentSecond === secondsToCount ? 0 : currentSecond + 1;
+    
+    if (currentSecond <= 0) {
+      timeStarted = Math.floor(new Date().getTime() / second);
+    }
+    
+    timeNow = Math.floor(new Date().getTime() / second);
+    timeElapsed = timeNow - timeStarted - totalPause + 1;
+    
+    if (currentTimer <= 0) {
       switchover();
     } else {
-      currentTimer--;
+      currentTimer = secondsToCount - timeElapsed;
       writeTime();
     }
     if (working) {
-      sliceTomato();
+      sliceTomato(secondsToCount, oneIdxedCurrentSecond);
     } else {
-      ripenTomato();
+      ripenTomato(secondsToCount, oneIdxedCurrentSecond);
     }
   }
   
@@ -79,23 +124,34 @@ $(document).ready(function() {
   
   var cdInterval;
   
-  $('#timer').click(function(e) {
-    e.preventDefault();
+  function startStopTimer(e) {
+    e.preventDefault();    
+    
     if (paused) {
       cdInterval = setInterval(countdown, second);
-      
       paused = false;
       
-      //$(this).html('Stop');
-      
+      if (startOfPause) {
+        endOfPause = Math.floor(new Date().getTime() / second);
+        totalPause += endOfPause - startOfPause;
+      }
+    
     } else {
       clearInterval(cdInterval);
       paused = true;
-      //$(this).html('Start');
-      
+      startOfPause = Math.floor(new Date().getTime() / second);
     }
     writeStatus();
-
+  }
+  
+  $('#timer').click(function(e) {startStopTimer(e)});
+  
+  $('#timer').keydown(function(e) {
+    var keyCode = e.which;
+    if (keyCode === 13 || keyCode === 32) {
+      // enter and space
+      startStopTimer(e);
+    }
   });
   
   function validate(input) {
@@ -138,7 +194,7 @@ $(document).ready(function() {
   // slicing animation
   
   
-  function sliceTomato() {
+  function sliceTomato(secondsToCount, oneIdxedCurrentSecond) {
     
     //assume width === height - only works for perfect circles within perfect squares
 
@@ -148,13 +204,10 @@ $(document).ready(function() {
     var over180Deg;
     var clockHandX;
     var clockHandY;
-
-    var secondsToCount = working ? workTimer : breakTimer;
-    var currentSecond = secondsToCount - currentTimer;
-
+    
     var startpoint = 90;  
 
-    var currentDegrees = ((currentSecond/secondsToCount) * 360) + startpoint;
+    var currentDegrees = ((oneIdxedCurrentSecond/secondsToCount) * 360) + startpoint;
     var currentRadians = currentDegrees * (Math.PI / 180);
 
     clockHandX = radius - (radius * Math.cos(currentRadians));
@@ -163,7 +216,7 @@ $(document).ready(function() {
 
     over180Deg = currentDegrees > 180 ? 1 : 0;
 
-    if (currentSecond === secondsToCount) {
+    if (oneIdxedCurrentSecond === secondsToCount) {
       $('#cutout').html(`
         <circle cx="${radius}" cy="${radius}" r="${radius}" fill="#5e4" />
       `)
@@ -183,15 +236,23 @@ $(document).ready(function() {
     }
   }
   
-  function ripenTomato() {
+  function ripenTomato(secondsToCount, oneIdxedCurrentSecond) {
     
-    var secondsToCount = working ? workTimer : breakTimer;
-    var currentSecond = secondsToCount - currentTimer;
-
     $('#cutout').html('');
     
-    $('#breakTimerImg').css('opacity', 1 - currentSecond/secondsToCount);
+    $('#breakTimerImg').css('opacity', 1 - oneIdxedCurrentSecond/secondsToCount);
     
   }
+  
+  $('#mute').click(function() {
+    
+    if (audioPlayback) {
+      $(this).attr('src', '/img/sound_mute.svg');
+    } else {
+      $(this).attr('src', '/img/sound_on.svg');
+    }
+    audioPlayback = !audioPlayback;
+    
+  });
   
 });
