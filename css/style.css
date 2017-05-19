@@ -11,7 +11,9 @@ html {
 h1 {
   color: #030;
   text-align: center;
-  margin: 20px 70px 0 70px; }
+  margin: 20px 70px 0 70px;
+  z-index: 6;
+  position: relative; }
 
 #timer {
   position: relative;

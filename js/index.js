@@ -247,9 +247,9 @@ $(document).ready(function() {
   $('#mute').click(function() {
     
     if (audioPlayback) {
-      $(this).attr('src', '/img/sound_mute.svg');
+      $('#mute').attr('src', '/img/sound_mute.svg');
     } else {
-      $(this).attr('src', '/img/sound_on.svg');
+      $('#mute').attr('src', '/img/sound_on.svg');
     }
     audioPlayback = !audioPlayback;
     
