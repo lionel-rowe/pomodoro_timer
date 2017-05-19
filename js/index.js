@@ -29,8 +29,8 @@ $(document).ready(function() {
   if (testMode) {
     workTimer = 0.1 * minute;
     breakTimer = 0.1 * minute;
-  }
-  */
+  } */
+  
   
   var working = true;
   var paused = true;
@@ -144,9 +144,9 @@ $(document).ready(function() {
     writeStatus();
   }
   
-  $('#timer').click(function(e) {startStopTimer(e)});
+  $('#startStop').click(function(e) {startStopTimer(e)});
   
-  $('#timer').keydown(function(e) {
+  $('#startStop').keydown(function(e) {
     var keyCode = e.which;
     if (keyCode === 13 || keyCode === 32) {
       // enter and space

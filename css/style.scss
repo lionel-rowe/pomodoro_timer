@@ -24,7 +24,6 @@ h1 {
   position: relative;
   width: 300px;
   margin: 5px auto 5px auto;
-  cursor: pointer;
 }
 
 .timerImg {
@@ -33,12 +32,12 @@ h1 {
 }
 
 #pomodoroTimerImg {
-  z-index: -2;
-  position: relative;
+  z-index: 1;
+  position: relative;  
 }
 
 #breakTimerImg {
-  z-index: -1;
+  z-index: 2;
   position: absolute;
   top: 0;
   left: 0;
@@ -51,7 +50,7 @@ h1 {
   position: absolute;
   top: -15px;
   left: -15px;
-  z-index: 0;
+  z-index: 3;
 }
 
 #timerDisplay {
@@ -66,7 +65,17 @@ h1 {
   top: calc(150px - 0.7em);
   left: 150px;
   transform: translateX(-50%);
-  z-index: 1;
+  z-index: 4;
+}
+
+#startStop {
+  width: 300px;
+  height: 300px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+  z-index: 5;
 }
 
 #status {

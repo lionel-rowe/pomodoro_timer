@@ -17,12 +17,14 @@
 
   <input type="image" src="img/sound_on.svg" id="mute" aria-label="Sound on/off">
   
-  <div id="timer" tabindex="0" aria-label="Start/stop timer">
-    <img class="timerImg" id="pomodoroTimerImg" src="img/tomato_red.png" alt="Pomodoro timer">
-    <img class="timerImg" id="breakTimerImg" src="img/tomato_green.png" alt="Break timer"> <!--Has to be loaded on page load to prevent Flash Of Unformatted Tomato-->
+  <div id="timer">
+    <img class="timerImg" id="pomodoroTimerImg" src="img/tomato_red.png">
+    <img class="timerImg" id="breakTimerImg" src="img/tomato_green.png"> <!--Has to be loaded on page load to prevent Flash Of Unformatted Tomato-->
+    <!--Images modified from http://maxpixel.freegreatpicture.com/Tomato-Vegetables-Cherry-Tomatoes-Close-up-Red-952449-->
     <div id="timerDisplay"></div>
     <div id="status" class="blink">Click to start</div>
     <svg id="cutout" aria-hidden="true"></svg>
+    <div id="startStop" role="button" tabindex="0" aria-label="Start/stop pomodoro timer"></div>
   </div>
 
   <form id="controls">
@@ -38,7 +40,7 @@
   
   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
 
-    <script src="js/index.js"></script>
+  <script src="js/index.js"></script>
 
 </body>
 </html>
