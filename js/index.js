@@ -1,9 +1,5 @@
 $(document).ready(function() {
   
-  // TODO
-  // * Fix timing of pauses (sometimes skips a second)
-  // * Make timers skip 0
-  
   const minute = 60; // secs
   const second = 1000; // ms
   
@@ -11,6 +7,23 @@ $(document).ready(function() {
   
   var workTimer = 25 * minute; // minutes
   var breakTimer = 5 * minute; // minutes
+  
+  var working = true;
+  var paused = true;
+  var audioPlayback = true;
+  
+  var testMode = false;
+  
+  if (testMode) {
+    workTimer = 0.1 * minute;
+    breakTimer = 0.1 * minute;
+  } 
+  
+  // we'll need these later
+  
+  var currentTimer = working ? workTimer : breakTimer;
+  
+  var timeStarted = 0, timeNow = 0, timeElapsed = 0, startOfPause = 0, endOfPause = 0, totalPause = 0;
   
   // media
     
@@ -22,22 +35,9 @@ $(document).ready(function() {
   - https://www.freesound.org/people/ajubamusic/sounds/320806/
   */
   
-  /* uncomment to turn on test mode
-  
-  var testMode = true;
-  
-  if (testMode) {
-    workTimer = 0.1 * minute;
-    breakTimer = 0.1 * minute;
-  } */
-  
-  
-  var working = true;
-  var paused = true;
-  var audioPlayback = true;
-  var currentTimer = working ? workTimer : breakTimer;
-  
-  // initialize UI
+  /* ==========================================
+  |              Initialize UI                |
+  ===========================================*/
   
   $('#workTimer').val(workTimer / minute);
   $('#breakTimer').val(breakTimer / minute);
@@ -52,13 +52,30 @@ $(document).ready(function() {
   }
   
   function writeTime() {
-    $('#timerDisplay').html(Math.floor(currentTimer / minute) + ':' + addLeadingZeroes(currentTimer % minute, 2));
+    $('#timerDisplay').html(Math.floor((currentTimer - timeElapsed) / minute) + ':' + addLeadingZeroes(Math.floor(currentTimer - timeElapsed) % minute, 2));
   }
   
   writeTime();
   
+  /* ==========================================
+  | Writing status + switching between timers |
+  ===========================================*/
+  
+  function writeStatus() {
+    $('#status').css('opacity', '0');
+    if (paused) {
+      $('#status').html('Paused...');
+    } else if (working) {
+      $('#status').html('Time to work!');
+    } else {
+      $('#status').html('Ripening... Take a break!');
+    }
+    $('#status').animate({opacity: 1}, second);
+  }
+  
   function switchover() {
-    totalPause = 0;
+    timeStarted = Date.now() / second;
+    timeNow = timeElapsed = startOfPause = endOfPause = totalPause = 0;
     if (working) {
       currentTimer = breakTimer;
       working = false;
@@ -75,71 +92,69 @@ $(document).ready(function() {
     writeStatus();
     writeTime();
   }
-
-  var timeStarted, timeNow, timeElapsed, startOfPause, endOfPause, totalPause = 0;
   
-  var secondsToCount, currentSecond, oneIdxedCurrentSecond;
+  /* ==========================================
+  |                Countdown                  |
+  ===========================================*/
+  
+  function refreshTimeElapsed() {
+    timeNow = Date.now() / second;
+    timeElapsed = timeNow - timeStarted - totalPause;
+   }
+  
+  var countdownTimeout;
   
   function countdown() {
+        
+    refreshTimeElapsed();
     
-    secondsToCount = working ? workTimer : breakTimer;
-    currentSecond = secondsToCount - currentTimer;
-    oneIdxedCurrentSecond = currentSecond === secondsToCount ? 0 : currentSecond + 1;
-    
-    if (currentSecond <= 0) {
-      timeStarted = Math.floor(new Date().getTime() / second);
-    }
-    
-    timeNow = Math.floor(new Date().getTime() / second);
-    timeElapsed = timeNow - timeStarted - totalPause + 1;
-    
-    if (currentTimer <= 0) {
+    if (timeElapsed >= currentTimer) {
       switchover();
     } else {
-      currentTimer = secondsToCount - timeElapsed;
       writeTime();
-    }
-    if (working) {
-      sliceTomato(secondsToCount, oneIdxedCurrentSecond);
-    } else {
-      ripenTomato(secondsToCount, oneIdxedCurrentSecond);
-    }
-  }
-  
-  var blinkInterval;
-  
-  function writeStatus() {
-    $('#status').css('opacity', '0');
-    if (paused) {
-      $('#status').html('Paused...');
-    } else if (working) {
-      $('#status').html('Time to work!');
-    } else {
-      $('#status').html('Ripening... Take a break!');
+      if (working) {
+        sliceTomato(Math.floor(currentTimer), Math.floor(timeElapsed + 1));
+      } else {
+        ripenTomato(Math.floor(currentTimer), Math.floor(timeElapsed + 1));
+      }
     }
     
-    $('#status').animate({opacity: 1}, second);
-  
+    var timeToNext = ((timeElapsed * second) - (timeElapsed * second) % second) - (timeElapsed * second - second);
+    
+    countdownTimeout = setTimeout(countdown, timeToNext < second ? timeToNext : timeToNext - second);
+    console.log(timeToNext);
+    
   }
   
-  var cdInterval;
+  /* ===========================================
+  |       Start and stop counting down         |
+  ============================================*/
   
   function startStopTimer(e) {
-    e.preventDefault();    
+    
+    e.preventDefault();
+    
+    if (timeStarted === 0) {
+      timeStarted = Date.now() / second;
+    }
+    
+    refreshTimeElapsed();
     
     if (paused) {
-      cdInterval = setInterval(countdown, second);
-      paused = false;
-      
-      if (startOfPause) {
-        endOfPause = Math.floor(new Date().getTime() / second);
+      if (startOfPause !== 0) {
+        endOfPause = Date.now() / second;
         totalPause += endOfPause - startOfPause;
+        refreshTimeElapsed();
+        startOfPause = 0;
       }
+      
+      countdown();
+      paused = false;
     
     } else {
-      clearInterval(cdInterval);
+      clearTimeout(countdownTimeout);
       paused = true;
-      startOfPause = Math.floor(new Date().getTime() / second);
+      startOfPause = Date.now() / second;
     }
     writeStatus();
   }
@@ -154,45 +169,9 @@ $(document).ready(function() {
     }
   });
   
-  function validate(input) {
-    if (isNaN(input) || input < 1 || input > 60) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-  
-  $('#workTimer').change(function() {
-    var input = $(this).val();
-    if (!validate(input)) {
-      alert('Please input a number between 1 and 60.');
-      $(this).val(workTimer / minute);
-    } else {
-      workTimer = input * minute;
-      if (working) {
-        currentTimer = workTimer;
-        writeTime();
-      }
-    }
-  });
-
-  $('#breakTimer').change(function() {
-    var input = $(this).val();
-    if (!validate(input)) {
-      alert('Please input a number between 1 and 60.');
-      $(this).val(breakTimer / minute);
-    } else {
-      breakTimer = input * minute;
-      if (!working) {
-        currentTimer = breakTimer;
-        writeTime();
-      }
-    }
-  });
-  
-  
-  // slicing animation
-  
+  /* ===========================================
+  |               Tomato animations            |
+  ============================================*/
   
   function sliceTomato(secondsToCount, oneIdxedCurrentSecond) {
     
@@ -244,15 +223,65 @@ $(document).ready(function() {
     
   }
   
-  $('#mute').click(function() {
+  /* ===========================================
+  |                 Misc UI stuff              |
+  ============================================*/
+  
+  function validate(input) {
+    if (isNaN(input) || input < 1 || input > 60) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  
+  $('#workTimer').change(function() {
+    var input = $(this).val();
+    if (!validate(input)) {
+      alert('Please input a number between 1 and 60.');
+      $(this).val(workTimer / minute);
+    } else {
+      workTimer = input * minute;
+      if (working) {
+        working = false;
+        switchover();
+      }
+    }
+  });
+
+  $('#breakTimer').change(function() {
+    var input = $(this).val();
+    if (!validate(input)) {
+      alert('Please input a number between 1 and 60.');
+      $(this).val(breakTimer / minute);
+    } else {
+      breakTimer = input * minute;
+      if (!working) {
+        working = true;
+        switchover();
+      }
+    }
+  });
+  
+  $('#soundControls').click(function() {
     
     if (audioPlayback) {
-      $('#mute').attr('src', '/img/sound_mute.svg');
+      $('#soundMute').css('opacity', '0');
+      $('#soundOn').css('opacity', '1');
     } else {
-      $('#mute').attr('src', '/img/sound_on.svg');
+      $('#soundOn').css('opacity', '0');
+      $('#soundMute').css('opacity', '1');
     }
     audioPlayback = !audioPlayback;
     
+  });
+  
+  $('#soundControls').keydown(function(e) {
+    var keyCode = e.which;
+    if (keyCode === 13 || keyCode === 32) {
+      // enter and space
+      $(this).click();
+    }
   });
   
 });

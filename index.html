@@ -15,14 +15,17 @@
   
   <h1>Pomodoro Timer</h1>
 
-  <input type="image" src="img/sound_on.svg" id="mute" aria-label="Sound on/off">
+  <div id="soundControls" aria-label="Mute/unmute sound" tabindex="0">
+    <img src="img/sound_on.svg" id="soundMute" alt="Mute sound">
+    <img src="img/sound_mute.svg" id="soundOn" alt="Unmute sound">
+  </div>
   
   <div id="timer">
     <img class="timerImg" id="pomodoroTimerImg" src="img/tomato_red.png">
     <img class="timerImg" id="breakTimerImg" src="img/tomato_green.png"> <!--Has to be loaded on page load to prevent Flash Of Unformatted Tomato-->
     <!--Images modified from http://maxpixel.freegreatpicture.com/Tomato-Vegetables-Cherry-Tomatoes-Close-up-Red-952449-->
     <div id="timerDisplay"></div>
-    <div id="status" class="blink">Click to start</div>
+    <p id="status" class="blink">Click to start</p>
     <svg id="cutout" aria-hidden="true"></svg>
     <div id="startStop" role="button" tabindex="0" aria-label="Start/stop pomodoro timer"></div>
   </div>

@@ -1,13 +1,15 @@
 $main-text-color: #030;
 $main-background-color: #5e4;
+$body-font: "Montserrat", sans-serif;
+$heading-font: "Baloo", "Cooper Black", "Arial Black", sans-serif;
 
 * {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", "Calibri", sans-serif;
   color: $main-text-color;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Baloo", cursive;
+  font-family: $heading-font;
 }
 
 html {
@@ -17,7 +19,7 @@ html {
 h1 {
   color: $main-text-color;
   text-align: center;
-  margin: 20px 70px 0 70px;
+  margin: 0.7em 70px 0.6em 70px;
   z-index: 6;
   position: relative;
 }
@@ -83,10 +85,11 @@ h1 {
 #status {
   font-style: italic;
   text-align: center;
-  font-family: 'Baloo', cursive;
+  font-family: $heading-font;
   font-size: 1.2em;
   position: relative;
-  z-index: 1;
+  z-index: 6;
+  margin-top: 0.3em;
 }
 
 #controls {
@@ -120,12 +123,23 @@ h1 {
   
 }
 
-#mute {
-  position: fixed;
+#soundControls {
+  position: absolute;
   top: 20px;
   left: 20px;
+  x-index: 2;
+}
+
+#soundMute, #soundOn {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 50px;
   height: 50px;
   border: none;
   cursor: pointer;
+}
+
+#soundOn {
+  opacity: 0;
 }
